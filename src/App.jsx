@@ -1,4 +1,9 @@
 import './App.css';
+import { Routes, Route, Link } from 'react-router-dom';
+import Home from './Home.jsx';
+import AboutUs from './AboutUs.jsx';
+import ContactUs from './ContactUs.jsx';
+import LoginSignup from './LoginSignup.jsx';
 
 const App = () => {
 
@@ -6,15 +11,20 @@ const App = () => {
     <div className="App">
       <nav>
         <div className="nav-left">
-          <button>Home</button>
-          <button>About Us</button>
-          <button>Contact Us</button>
+          <Link to="/"><button>Home</button></Link>
+          <Link to="/about"><button>About Us</button></Link>
+          <Link to="/contact"><button>Contact Us</button></Link>
         </div>
         <div className="nav-right">
-          <button>Login/Signup</button>
+          <Link to="/login"><button>Login/Signup</button></Link>
         </div>
       </nav>
-        <h1>Welcome to The Internship Tracker!</h1>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/login" element={<LoginSignup />} />
+      </Routes>
     </div>
   )
 }
