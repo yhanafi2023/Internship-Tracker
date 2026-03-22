@@ -4,6 +4,8 @@ import Home from './Home.jsx';
 import AboutUs from './AboutUs.jsx';
 import ContactUs from './ContactUs.jsx';
 import LoginSignup from './LoginSignup.jsx';
+import Login from './Login.jsx';
+import Signup from './Signup.jsx';
 
 const App = () => {
 
