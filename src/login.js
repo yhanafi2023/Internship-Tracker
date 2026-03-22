@@ -57,7 +57,4 @@ function Login() {
 }
 
 export default Login;
-  </script>
 
-</body>
-</html>
