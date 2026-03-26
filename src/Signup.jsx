@@ -32,23 +32,24 @@ function Signup() {
   return (
     <div>
       <h2>Create Account</h2>
-
-      <form onSubmit={handleSignup}>
-        <label>Email:</label><br />
+      <form onSubmit={handleSignup} className="auth-form">
+        <label>Email:</label>
         <input 
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-        /><br /><br />
+          placeholder="Enter your email"
+        />
 
-        <label>Password:</label><br />
+        <label>Password:</label>
         <input 
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-        /><br /><br />
+          placeholder="Create a password"
+        />
 
         <button type="submit">Sign Up</button>
       </form>
