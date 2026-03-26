@@ -139,6 +139,12 @@ const JobTracker = () => {
         >
           Import CSV
         </button>
+        <button 
+          className={`tab-btn ${activeTab === 'resume' ? 'active' : ''}`}
+          onClick={() => setActiveTab('resume')}
+        >
+          Resume
+        </button>
       </div>
 
       <div className="tab-content">
@@ -157,6 +163,7 @@ const JobTracker = () => {
         {activeTab === 'import' && (
           <ImportApplications onImport={handleImport} />
         )}
+        {activeTab === 'resume' && <ResumeUpload />}
       </div>
     </div>
   );
