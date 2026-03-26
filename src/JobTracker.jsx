@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ImportApplications from './components/ImportApplications.jsx';
 import JobDashboard from './components/JobDashboard.jsx';
 import AddApplicationForm from './components/AddApplicationForm.jsx';
+import ResumeUpload from './components/ResumeUpload.jsx';
 
 const JobTracker = () => {
   const [applications, setApplications] = useState([]);
