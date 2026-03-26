@@ -9,7 +9,11 @@ import Signup from './Signup.jsx';
 import JobTracker from './JobTracker.jsx';
 
 const App = () => {
+const isLoggedIn = localStorage.getItem("user");
 
+const PrivateRoute = ({ children }) => {
+  return isLoggedIn ? children : <LoginSignup />;
+};
   return (
     <div className="App">
       <nav>
@@ -28,7 +32,7 @@ const App = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/login" element={<LoginSignup />} />
-        <Route path="/tracker" element={<JobTracker />} />
+        <Route path="/tracker" element={<PrivateRoute> <JobTracker /> </PrivateRoute>}/>
       </Routes>
     </div>
   )
