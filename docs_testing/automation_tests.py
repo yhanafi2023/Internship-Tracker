@@ -1,33 +1,44 @@
 import requests
 
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://127.0.0.1:5000"
+
+TEST_EMAIL = "paige_test@example.com"
+TEST_PASSWORD = "Password123"
+
 
 def test_create_account():
     payload = {
-        "name": "Paige Test",
-        "email": "paige_test@example.com",
-        "password": "Password123"
+        "email": TEST_EMAIL,
+        "password": TEST_PASSWORD
     }
-    response = requests.post(f"{BASE_URL}/createUser", json=payload)
-    assert response.status_code == 201
-    assert "User created" in response.text
+
+    response = requests.post(f"{BASE_URL}/signup", json=payload)
+
+    assert response.status_code == 200
+    assert response.json().get("success") is True
+
 
 def test_login():
     payload = {
-        "email": "paige_test@example.com",
-        "password": "Password123"
+        "email": TEST_EMAIL,
+        "password": TEST_PASSWORD
     }
+
     response = requests.post(f"{BASE_URL}/login", json=payload)
+
     assert response.status_code == 200
-    assert "token" in response.json()
+    assert response.json().get("success") is True
+
 
 def test_add_application():
     payload = {
+        "email": TEST_EMAIL,
         "company": "Google",
-        "role": "Software Intern",
+        "position": "Software Intern",
         "status": "submitted"
     }
-    response = requests.post(f"{BASE_URL}/applications", json=payload)
-    assert response.status_code == 201
-    assert response.json()["company"] == "Google"
 
+    response = requests.post(f"{BASE_URL}/applications", json=payload)
+
+    assert response.status_code == 200
+    assert response.json().get("success") is True
