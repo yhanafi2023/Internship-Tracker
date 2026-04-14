@@ -43,6 +43,7 @@ export const parseJobApplicationsCSV = (csvText) => {
       location: getValue('location', headers, values) || '',
       status: APPLICATION_STATUSES.SAVED,
       applicationDate: getValue('date|applied|application date', headers, values) || new Date().toISOString().split('T')[0],
+      ddeadline: getValue('deadline|due date|closing date', headers, values) || '',
       salary: getValue('salary', headers, values) || '',
       description: getValue('description', headers, values) || '',
       link: getValue('link|url', headers, values) || '',

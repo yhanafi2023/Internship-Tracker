@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { APPLICATION_STATUSES } from '../utils/jobApplications.js';
 
+
 const AddApplicationForm = ({ onAddApplication }) => {
+  const [salaryError, setSalaryError] = useState('');
   const [formData, setFormData] = useState({
     company: '',
     position: '',
     location: '',
     status: APPLICATION_STATUSES.APPLIED,
     applicationDate: new Date().toISOString().split('T')[0],
+    deadline: new Date().toISOString().split('T')[0],
     salary: '',
     description: '',
     link: '',
@@ -22,7 +25,7 @@ const AddApplicationForm = ({ onAddApplication }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+ const handleSubmit = (e) => {
     e.preventDefault();
     
     if (!formData.company || !formData.position) {
@@ -30,8 +33,8 @@ const AddApplicationForm = ({ onAddApplication }) => {
       return;
     }
 
+    
     const newApplication = {
-      id: Date.now(),
       ...formData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -52,6 +55,24 @@ const AddApplicationForm = ({ onAddApplication }) => {
       notes: ''
     });
   };
+  const validateSalary = (value) => {
+    if (!value) return true; // salary is optional, empty is fine
+    const num = parseFloat(value.replace(/[,$]/g, ''));
+    if (isNaN(num)) {
+        setSalaryError('Please enter a valid salary amount (e.g. 75000 or $75,000)');
+        return false;
+    }
+    if (num < 1000) {
+        setSalaryError('Salary seems too low. Please enter a yearly salary (e.g. 75000)');
+        return false;
+    }
+    if (num > 10000000) {
+        setSalaryError('Salary seems too high. Please enter a realistic yearly salary');
+        return false;
+    }
+    setSalaryError('');
+    return true;
+};
 
   return (
     <div className="add-application-form">
@@ -128,18 +149,36 @@ const AddApplicationForm = ({ onAddApplication }) => {
               onChange={handleChange}
             />
           </div>
+        <div className="form-group">
+  <label htmlFor="deadline">Deadline</label>
+  <input
+    type="date"
+    id="deadline"
+    name="deadline"
+    value={formData.deadline}
+    onChange={handleChange}
+  />
+</div>
           
           <div className="form-group">
-            <label htmlFor="salary">Salary</label>
-            <input
-              type="text"
-              id="salary"
-              name="salary"
-              value={formData.salary}
-              onChange={handleChange}
-              placeholder="e.g. $25/hour or $60,000/year"
-            />
-          </div>
+    <label htmlFor="salary">Salary (per year)</label>
+    <input
+        type="text"
+        id="salary"
+        name="salary"
+        value={formData.salary}
+        onChange={(e) => {
+            handleChange(e);
+            validateSalary(e.target.value);
+        }}
+        placeholder="e.g. 75000 or $75,000"
+    />
+    {salaryError && (
+        <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '5px' }}>
+            {salaryError}
+        </p>
+    )}
+</div>
         </div>
 
         <div className="form-group">

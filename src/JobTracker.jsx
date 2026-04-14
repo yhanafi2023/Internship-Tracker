@@ -3,69 +3,100 @@ import ImportApplications from './components/ImportApplications.jsx';
 import JobDashboard from './components/JobDashboard.jsx';
 import AddApplicationForm from './components/AddApplicationForm.jsx';
 import ResumeUpload from './components/ResumeUpload.jsx';
+import InterviewPrep from './components/InterviewPrep.jsx';
 
 const JobTracker = () => {
   const [applications, setApplications] = useState([]);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
 
-  // Load applications from localStorage on component mount
-  useEffect(() => {
-    const savedApplications = localStorage.getItem('jobApplications');
-    if (savedApplications) {
-      try {
-        setApplications(JSON.parse(savedApplications));
-      } catch (error) {
-        console.error('Error loading applications:', error);
-      }
+
+
+
+const user = JSON.parse(localStorage.getItem("user"));
+const email = user?.email;
+
+// Load applications from backend instead of localStorage
+useEffect(() => {
+    fetch(`http://localhost:5000/applications/${email}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) setApplications(data.applications);
+            setLoading(false);
+        });
+}, []);
+
+// Save application to backend
+const handleAddApplication = async (newApplication) => {
+    const response = await fetch("http://localhost:5000/applications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...newApplication, email })
+    });
+    const data = await response.json();
+    if (data.success) {
+        setApplications(prev => [{ ...newApplication, id: data.id }, ...prev]);
+        setActiveTab('dashboard');
     }
-    setLoading(false);
-  }, []);
+};
 
-  // Save applications to localStorage whenever they change
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('jobApplications', JSON.stringify(applications));
-    }
-  }, [applications, loading]);
-
-  const handleAddApplication = (newApplication) => {
-    setApplications(prev => [newApplication, ...prev]);
-    setActiveTab('dashboard'); // Switch to dashboard after adding
-  };
-
-  const handleImport = (newApplications) => {
+  const handleImport = async (newApplications) => {
     // Add new applications, avoiding duplicates based on company and position
     const existingKeys = applications.map(app => `${app.company}-${app.position}`);
     const uniqueNewApps = newApplications.filter(app => 
       !existingKeys.includes(`${app.company}-${app.position}`)
     );
-    
-    setApplications(prev => [...prev, ...uniqueNewApps]);
+    const savedApps = [];
+    for (const app of uniqueNewApps) {
+        const response = await fetch("http://localhost:5000/applications", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...app, email })
+        });
+        const data = await response.json();
+        if (data.success) {
+            savedApps.push({ ...app, id: data.id });
+        }
+    }
+    setApplications(prev => [...prev, ...savedApps]);
     setActiveTab('dashboard'); // Switch to dashboard after import
   };
 
-  const handleUpdateApplication = (appId, updates) => {
-    setApplications(prev => 
-      prev.map(app => 
-        app.id === appId ? { ...app, ...updates } : app
-      )
+  const handleUpdateApplication = async (appId, updates) => {
+    // Update in backend
+    await fetch(`http://localhost:5000/applications/${appId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates)
+    });
+    // Update on screen
+    setApplications(prev =>
+        prev.map(app =>
+            app.id === appId ? { ...app, ...updates } : app
+        )
     );
-  };
+};
 
-  const handleDeleteApplication = (appId) => {
+const handleDeleteApplication = async (appId) => {
     if (window.confirm('Are you sure you want to delete this application?')) {
-      setApplications(prev => prev.filter(app => app.id !== appId));
+        await fetch(`http://localhost:5000/applications/${appId}`, {
+            method: "DELETE"
+        });
+        setApplications(prev => prev.filter(app => app.id !== appId));
     }
-  };
+};
 
-  const handleClearAll = () => {
+const handleClearAll = async () => {
     if (window.confirm('Are you sure you want to delete all applications? This cannot be undone.')) {
-      setApplications([]);
-      localStorage.removeItem('jobApplications');
+        // Delete each application from backend
+        for (const app of applications) {
+            await fetch(`http://localhost:5000/applications/${app.id}`, {
+                method: "DELETE"
+            });
+        }
+        setApplications([]);
     }
-  };
-
+};
   const exportToCSV = () => {
     if (applications.length === 0) {
       alert('No applications to export');
@@ -145,6 +176,12 @@ const JobTracker = () => {
         >
           Resume
         </button>
+        <button
+          className={`tab-btn ${activeTab === 'interview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('interview')}
+        >
+          Interview Prep
+        </button>
       </div>
 
       <div className="tab-content">
@@ -164,6 +201,7 @@ const JobTracker = () => {
           <ImportApplications onImport={handleImport} />
         )}
         {activeTab === 'resume' && <ResumeUpload />}
+        {activeTab === 'interview' && <InterviewPrep />}
       </div>
     </div>
   );

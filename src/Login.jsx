@@ -23,6 +23,11 @@ function Login() {
       } else {
         alert("Invalid credentials");
       }
+      if (data.success) {
+          localStorage.setItem("user", JSON.stringify({ email })); 
+          window.location.href = "/tracker";                        
+          alert("Login successful!");
+}
 
     } catch (error) {
       alert("Server not connected yet");
