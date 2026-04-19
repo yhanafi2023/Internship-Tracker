@@ -7,6 +7,7 @@ import InterviewPrep from './components/InterviewPrep.jsx';
 import Control from './components/Control.jsx';
 import Analytics from './components/Analytics.jsx';
 import Settings from './components/Settings.jsx';
+import URL from './config.js';
 
 const JobTracker = () => {
   const [applications, setApplications] = useState([]);
@@ -24,7 +25,7 @@ const isAdmin = user?.is_admin;
 
 
 useEffect(() => {
-    fetch(`http://localhost:5000/applications/${email}`)
+    fetch(`${URL}/applications/${email}`)
         .then(res => res.json())
         .then(data => {
             if (data.success) setApplications(data.applications);
@@ -34,7 +35,7 @@ useEffect(() => {
 
 // Save application to backend
 const handleAddApplication = async (newApplication) => {
-    const response = await fetch("http://localhost:5000/applications", {
+    const response = await fetch("${URL}/applications", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...newApplication, email })
@@ -59,7 +60,7 @@ const handleAddApplication = async (newApplication) => {
     );
     const savedApps = [];
     for (const app of uniqueNewApps) {
-        const response = await fetch("http://localhost:5000/applications", {
+        const response = await fetch("${URL}/applications", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...app, email })
@@ -78,7 +79,7 @@ const handleAddApplication = async (newApplication) => {
 };
 
   const handleUpdateApplication = async (appId, updates) => {
-    const response = await fetch(`http://localhost:5000/applications/${appId}`, {
+    const response = await fetch(`${URL}/applications/${appId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates)
@@ -89,7 +90,7 @@ const handleAddApplication = async (newApplication) => {
     }
 
     if (settings.autoRemoveRejected && updates.status?.toLowerCase() === 'rejected') {
-        await fetch(`http://localhost:5000/applications/${appId}`, { method: "DELETE" });
+        await fetch(`${URL}/applications/${appId}`, { method: "DELETE" });
         setApplications(prev => prev.filter(app => app.id !== appId));
         return;
     }
@@ -101,7 +102,7 @@ const handleAddApplication = async (newApplication) => {
 
 const handleDeleteApplication = async (appId) => {
     if (window.confirm('Are you sure you want to delete this application?')) {
-        const response = await fetch(`http://localhost:5000/applications/${appId}`, {
+        const response = await fetch(`${URL}/applications/${appId}`, {
             method: "DELETE"
         });
         if (response.status === 429) {
@@ -115,7 +116,7 @@ const handleDeleteApplication = async (appId) => {
 const handleClearAll = async () => {
     if (window.confirm('Are you sure you want to delete all applications? This cannot be undone.')) {
         for (const app of applications) {
-            const response = await fetch(`http://localhost:5000/applications/${app.id}`, {
+            const response = await fetch(`${URL}/applications/${app.id}`, {
                 method: "DELETE"
             });
             if (response.status === 429) {

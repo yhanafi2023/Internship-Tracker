@@ -21,7 +21,7 @@ const ResumeUpload = () => {
 
   useEffect(() => {
     if (email) {
-      fetch(`http://localhost:5000/applications/${email}/with-description`)
+      fetch(`${URL}/applications/${email}/with-description`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -54,7 +54,7 @@ const ResumeUpload = () => {
     setFeedback('');
 
     try {
-      const response = await fetch("http://localhost:5000/ai-feedback", {
+      const response = await fetch("${URL}/ai-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resume, description: selectedApp.description })

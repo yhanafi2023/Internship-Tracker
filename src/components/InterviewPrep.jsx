@@ -11,7 +11,7 @@ const InterviewPrep = () => {
 
   useEffect(() => {
     if (email) {
-      fetch(`http://localhost:5000/applications/${email}/with-interview-status`)
+      fetch(`${URL}/applications/${email}/with-interview-status`)
         .then(res => res.json())
         .then(data => {
           if (data.success && data.applications.length > 0) {
@@ -27,7 +27,7 @@ const InterviewPrep = () => {
     setLoading(true);
     setQuestions('');
     try {
-      const response = await fetch("http://localhost:5000/interview-feedback", {
+      const response = await fetch("${URL}/interview-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
