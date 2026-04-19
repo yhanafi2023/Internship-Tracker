@@ -17,7 +17,10 @@ import datetime
 load_dotenv()
 print("GROQ KEY:", os.getenv("GROQ_API_KEY"))
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
+CORS(app, resources={r"/*": {"origins": [
+    "http://localhost:5173",
+    "https://internship-tracker-alpha.vercel.app"
+]}})
 
 limiter = Limiter(app=app,
     key_func=get_remote_address,
