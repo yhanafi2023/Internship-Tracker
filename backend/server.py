@@ -72,7 +72,7 @@ with app.app_context():
 
 # Signup
 @app.route("/signup", methods=["POST"])
-@limiter.limit("5 per hour")  # Limit to 5 signup attempts per hour per IP
+@limiter.limit("5 per minute")  # Limit to 5 signup attempts per minute per IP
 def signup():
     try:
         data = request.get_json()
