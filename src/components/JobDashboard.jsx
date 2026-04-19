@@ -12,7 +12,7 @@ const JobDashboard = ({ applications, onUpdateApplication, onDeleteApplication }
   const [editingApp, setEditingApp] = useState(null);  
   const [editForm, setEditForm] = useState({});
 
-  // Filter and search applications
+  
   const filteredApplications = applications
   .filter(app => {
     const matchesFilter =

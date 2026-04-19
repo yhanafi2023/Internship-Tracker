@@ -36,14 +36,21 @@ export const parseJobApplicationsCSV = (csvText) => {
   
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(',').map(v => v.trim());
+    
+    const company = getValue('company', headers, values);
+    const position = getValue('position|title|job', headers, values);
+
+    // Ensures that the mandatory requirements are in the CSV file
+    if (!company || !position) continue;
+
     const application = {
       id: Date.now() + i,
-      company: getValue('company', headers, values) || 'Unknown Company',
-      position: getValue('position|title|job', headers, values) || 'Unknown Position',
+      company,
+      position,
       location: getValue('location', headers, values) || '',
       status: APPLICATION_STATUSES.SAVED,
       applicationDate: getValue('date|applied|application date', headers, values) || new Date().toISOString().split('T')[0],
-      ddeadline: getValue('deadline|due date|closing date', headers, values) || '',
+      deadline: getValue('deadline|due date|closing date', headers, values) || '',
       salary: getValue('salary', headers, values) || '',
       description: getValue('description', headers, values) || '',
       link: getValue('link|url', headers, values) || '',
@@ -52,12 +59,12 @@ export const parseJobApplicationsCSV = (csvText) => {
       updatedAt: new Date().toISOString()
     };
     applications.push(application);
-  }
+}
   
   return applications;
 };
 
-// Helper function to get value from CSV headers
+
 const getValue = (fieldPattern, headers, values) => {
   const patterns = fieldPattern.split('|');
   for (const pattern of patterns) {
@@ -69,7 +76,7 @@ const getValue = (fieldPattern, headers, values) => {
   return null;
 };
 
-// Get next status in the application flow
+
 export const getNextStatus = (currentStatus) => {
   const currentIndex = STATUS_ORDER.indexOf(currentStatus);
   if (currentIndex < STATUS_ORDER.length - 1) {
@@ -78,7 +85,7 @@ export const getNextStatus = (currentStatus) => {
   return currentStatus;
 };
 
-// Get previous status in the application flow
+
 export const getPreviousStatus = (currentStatus) => {
   const currentIndex = STATUS_ORDER.indexOf(currentStatus);
   if (currentIndex > 0) {

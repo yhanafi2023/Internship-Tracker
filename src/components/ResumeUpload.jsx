@@ -10,31 +10,27 @@ const ResumeUpload = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const email = user?.email;
 
-  // Load resume from localStorage
   useEffect(() => {
     const savedResume = localStorage.getItem('resume');
     if (savedResume) setResume(savedResume);
   }, []);
 
-  // Save resume to localStorage
   useEffect(() => {
     if (resume) localStorage.setItem('resume', resume);
   }, [resume]);
 
-  // Fetch applications that have a description
-  // Replace your applications fetch useEffect with this:
-useEffect(() => {
+  useEffect(() => {
     if (email) {
       fetch(`http://localhost:5000/applications/${email}/with-description`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
             setApplications(data.applications);
-            setSelectedApp(data.applications[0]); // auto-select the first one
+            setSelectedApp(data.applications[0]);
           }
         });
     }
-}, []);
+  }, []);
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
@@ -51,14 +47,8 @@ useEffect(() => {
   };
 
   const handleGetFeedback = async () => {
-    if (!resume) {
-      alert('Please upload a resume first');
-      return;
-    }
-    if (!selectedApp) {
-      alert('Please select a job application');
-      return;
-    }
+    if (!resume) { alert('Please upload a resume first'); return; }
+    if (!selectedApp) { alert('Please select a job application'); return; }
 
     setLoadingFeedback(true);
     setFeedback('');
@@ -67,18 +57,15 @@ useEffect(() => {
       const response = await fetch("http://localhost:5000/ai-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          resume: resume,
-          description: selectedApp.description
-        })
+        body: JSON.stringify({ resume, description: selectedApp.description })
       });
-
-      const data = await response.json();
-      if (data.success) {
-        setFeedback(data.feedback);
-      } else {
-        alert('Error getting feedback: ' + data.message);
+      if (response.status === 429) {
+        alert("Too many requests. Please try again later.");
+        return;
       }
+      const data = await response.json();
+      if (data.success) setFeedback(data.feedback);
+      else alert('Error getting feedback: ' + data.message);
     } catch (error) {
       alert('Error connecting to server');
     } finally {
@@ -86,63 +73,131 @@ useEffect(() => {
     }
   };
 
+  const formatFeedback = (text) => {
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    return lines.map((line, index) => {
+     
+      const isHeading = line.startsWith('**') && line.endsWith('**') || line === line.toUpperCase();
+      if (isHeading) {
+        return (
+          <div key={index} style={{
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            marginTop: '20px',
+            marginBottom: '6px',
+            color: '#667eea'
+          }}>
+            {line}
+          </div>
+        );
+      }
+   
+      const isBullet = line.trim().startsWith('-') || line.trim().startsWith('•') || /^\d+\./.test(line.trim());
+      if (isBullet) {
+        return (
+          <div key={index} style={{
+            display: 'flex',
+            gap: '8px',
+            marginBottom: '6px',
+            paddingLeft: '12px'
+          }}>
+            <span style={{ color: '#667eea', flexShrink: 0 }}>•</span>
+            <span>{line.replace(/^[-•]\s*/, '').replace(/^\d+\.\s*/, '')}</span>
+          </div>
+        );
+      }
+      
+      return (
+        <p key={index} style={{ marginBottom: '8px', lineHeight: '1.7' }}>
+          {line}
+        </p>
+      );
+    });
+  };
+
   return (
-    <div>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
       <h2>Resume</h2>
 
-      <input
-        type="file"
-        accept=".pdf,.doc,.docx"
-        onChange={handleUpload}
-      />
+      <div style={{
+        background: 'white',
+        borderRadius: '12px',
+        padding: '24px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+        marginBottom: '24px'
+      }}>
+        <h3 style={{ marginBottom: '16px' }}>Upload Resume</h3>
+        <input type="file" accept=".pdf,.doc,.docx" onChange={handleUpload} />
+        {resume && (
+          <div style={{ marginTop: '16px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <span style={{ color: '#28a745', fontWeight: '600' }}>✅ Resume uploaded</span>
+            <a href={resume} download="resume">
+              <button>Download</button>
+            </a>
+            <button onClick={handleRemove} style={{ background: 'linear-gradient(135deg, #dc3545, #c82333)' }}>
+              Remove
+            </button>
+          </div>
+        )}
+      </div>
 
-      {resume && (
-        <div style={{ marginTop: '20px' }}>
-          <p>✅ Resume uploaded</p>
-          <a href={resume} download="resume">
-            <button>Download Resume</button>
-          </a>
-          <button onClick={handleRemove}>Remove Resume</button>
-        </div>
-      )}
-
-      <div style={{ marginTop: '40px' }}>
-        <h3>AI Resume Feedback</h3>
+      <div style={{
+        background: 'white',
+        borderRadius: '12px',
+        padding: '24px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.08)'
+      }}>
+        <h3 style={{ marginBottom: '16px' }}>AI Resume Feedback</h3>
 
         {applications.length === 0 ? (
-          <p>No applications with job descriptions found. Add a job description to an application to get AI feedback.</p>
+          <p style={{ color: '#666' }}>No applications with job descriptions found. Add a job description to an application to get AI feedback.</p>
         ) : (
-          <>
-            <p>Select a job application to compare your resume against:</p>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             <select
-                onChange={(e) => {
+              onChange={(e) => {
                 const app = applications.find(a => a.id === parseInt(e.target.value));
                 setSelectedApp(app);
                 setFeedback('');
-  }}
-  value={selectedApp?.id || ""}  
->
-  {applications.map(app => (
-    <option key={app.id} value={app.id}>
-      {app.company} — {app.position}
-    </option>
-  ))}
-</select>
-
+              }}
+              value={selectedApp?.id || ""}
+              style={{ padding: '10px', borderRadius: '8px', border: '2px solid #e1e1e1', fontSize: '14px' }}
+            >
+              {applications.map(app => (
+                <option key={app.id} value={app.id}>
+                  {app.company} — {app.position}
+                </option>
+              ))}
+            </select>
             <button
               onClick={handleGetFeedback}
               disabled={loadingFeedback || !resume || !selectedApp}
-              style={{ marginLeft: '10px' }}
             >
-              {loadingFeedback ? 'Getting Feedback...' : 'Get AI Feedback'}
+              {loadingFeedback ? 'Analyzing...' : 'Get AI Feedback'}
             </button>
-          </>
+          </div>
+        )}
+
+        {loadingFeedback && (
+          <div style={{ marginTop: '24px', color: '#667eea', fontWeight: '600' }}>
+            Analyzing your resume...
+          </div>
         )}
 
         {feedback && (
-          <div style={{ marginTop: '20px', whiteSpace: 'pre-wrap' }}>
-            <h4>Feedback:</h4>
-            <p>{feedback}</p>
+          <div style={{
+            marginTop: '24px',
+            padding: '24px',
+            background: '#f8f9fa',
+            borderRadius: '12px',
+            borderLeft: '4px solid #667eea',
+            textAlign: 'left',
+            fontSize: '0.95rem',
+            color: '#333'
+          }}>
+            <h4 style={{ marginBottom: '16px', color: '#667eea' }}>
+              📋 Feedback for {selectedApp?.company} — {selectedApp?.position}
+            </h4>
+            {formatFeedback(feedback)}
           </div>
         )}
       </div>

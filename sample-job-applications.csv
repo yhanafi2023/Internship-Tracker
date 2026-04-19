@@ -1,11 +1,12 @@
-company,position,location,date,salary,description,link
-Google,Software Engineer Intern,Mountain View,CA,2024-03-15,$35/hour,Backend development with Python and Go,https://careers.google.com/jobs/123456
-Microsoft,Frontend Developer Intern,Seattle,WA,2024-03-10,$40/hour,React development for Azure team,https://careers.microsoft.com/job/789012
-Amazon,Data Science Intern,New York,NY,2024-03-08,$45/hour,Machine learning and data analysis,https://www.amazon.jobs/345678
-Meta,Product Design Intern,Remote,2024-03-05,$50/hour,UI/UX design for social platforms,https://www.metacareers.com/901234
-Apple,iOS Developer Intern,Cupertino,CA,2024-03-01,$48/hour,Native iOS app development with Swift,https://jobs.apple.com/en-us/details/567890
-Netflix,Full Stack Engineer Intern,Los Angeles,CA,2024-02-28,$55/hour,Streaming platform backend development,https://jobs.netflix.com/jobs/234567
-Tesla,Autonomous Systems Intern,Austin,TX,2024-02-25,$42/hour,Self-driving car software engineering,https://www.tesla.com/careers/890123
-Spotify,Mobile Developer Intern,Stockholm,Sweden,2024-02-20,$38/hour,Android and iOS music app development,https://www.spotifyjobs.com/job/456789
-Uber,Machine Learning Intern,San Francisco,CA,2024-02-18,$46/hour,Ride-sharing optimization algorithms,https://www.uber.com/careers/345678
-LinkedIn,Backend Engineer Intern,Sunnyvale,CA,2024-02-15,$41/hour,Social platform infrastructure,https://careers.linkedin.com/jobs/678901
+company,position,location,application date, deadline, salary,description,link
+company,position,location,status,date,deadline,salary,description,link
+Google,Software Engineer Intern,Mountain View,Applied,2024-03-15,2024-04-15,$35/hour,Backend development with Python and Go,https://careers.google.com/jobs/123456
+Microsoft,Frontend Developer Intern,Seattle,Applied,2024-03-10,2024-04-10,$40/hour,React development for Azure team,https://careers.microsoft.com/job/789012
+Amazon,Data Science Intern,New York,Applied,2024-03-08,2024-04-08,$45/hour,Machine learning and data analysis,https://www.amazon.jobs/345678
+Meta,Product Design Intern,Remote,Applied,2024-03-05,2024-04-05,$50/hour,UI/UX design for social platforms,https://www.metacareers.com/901234
+Apple,iOS Developer Intern,Cupertino,Applied,2024-03-01,2024-04-01,$48/hour,Native iOS app development with Swift,https://jobs.apple.com/en-us/details/567890
+Netflix,Full Stack Engineer Intern,Los Angeles,Applied,2024-02-28,2024-03-28,$55/hour,Streaming platform backend development,https://jobs.netflix.com/jobs/234567
+Tesla,Autonomous Systems Intern,Austin,Applied,2024-02-25,2024-03-25,$42/hour,Self-driving car software engineering,https://www.tesla.com/careers/890123
+Spotify,Mobile Developer Intern,Stockholm,Applied,2024-02-20,2024-03-20,$38/hour,Android and iOS music app development,https://www.spotifyjobs.com/job/456789
+Uber,Machine Learning Intern,San Francisco,Applied,2024-02-18,2024-03-18,$46/hour,Ride-sharing optimization algorithms,https://www.uber.com/careers/345678
+LinkedIn,Backend Engineer Intern,Sunnyvale,Applied,2024-02-15,2024-03-15,$41/hour,Social platform infrastructure,https://careers.linkedin.com/jobs/678901

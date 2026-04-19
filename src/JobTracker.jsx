@@ -4,19 +4,25 @@ import JobDashboard from './components/JobDashboard.jsx';
 import AddApplicationForm from './components/AddApplicationForm.jsx';
 import ResumeUpload from './components/ResumeUpload.jsx';
 import InterviewPrep from './components/InterviewPrep.jsx';
+import Control from './components/Control.jsx';
+import Analytics from './components/Analytics.jsx';
+import Settings from './components/Settings.jsx';
 
 const JobTracker = () => {
   const [applications, setApplications] = useState([]);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
-
+  const [settings, setSettings] = useState(() => ({
+    autoRemoveRejected: JSON.parse(localStorage.getItem("autoRemoveRejected")) || false
+}));
 
 
 
 const user = JSON.parse(localStorage.getItem("user"));
 const email = user?.email;
+const isAdmin = user?.is_admin;
 
-// Load applications from backend instead of localStorage
+
 useEffect(() => {
     fetch(`http://localhost:5000/applications/${email}`)
         .then(res => res.json())
@@ -33,6 +39,12 @@ const handleAddApplication = async (newApplication) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...newApplication, email })
     });
+
+    if (response.status === 429) {
+        alert("Too many applications added. Please try again later.");
+        return;
+    }
+
     const data = await response.json();
     if (data.success) {
         setApplications(prev => [{ ...newApplication, id: data.id }, ...prev]);
@@ -41,10 +53,9 @@ const handleAddApplication = async (newApplication) => {
 };
 
   const handleImport = async (newApplications) => {
-    // Add new applications, avoiding duplicates based on company and position
     const existingKeys = applications.map(app => `${app.company}-${app.position}`);
-    const uniqueNewApps = newApplications.filter(app => 
-      !existingKeys.includes(`${app.company}-${app.position}`)
+    const uniqueNewApps = newApplications.filter(app =>
+        !existingKeys.includes(`${app.company}-${app.position}`)
     );
     const savedApps = [];
     for (const app of uniqueNewApps) {
@@ -53,46 +64,64 @@ const handleAddApplication = async (newApplication) => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...app, email })
         });
+        if (response.status === 429) {
+            alert("Too many imports. Please try again later.");
+            return;
+        }
         const data = await response.json();
         if (data.success) {
             savedApps.push({ ...app, id: data.id });
         }
     }
     setApplications(prev => [...prev, ...savedApps]);
-    setActiveTab('dashboard'); // Switch to dashboard after import
-  };
+    setActiveTab('dashboard');
+};
 
   const handleUpdateApplication = async (appId, updates) => {
-    // Update in backend
-    await fetch(`http://localhost:5000/applications/${appId}`, {
+    const response = await fetch(`http://localhost:5000/applications/${appId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates)
     });
-    // Update on screen
+    if (response.status === 429) {
+        alert("Too many updates. Please try again later.");
+        return;
+    }
+
+    if (settings.autoRemoveRejected && updates.status?.toLowerCase() === 'rejected') {
+        await fetch(`http://localhost:5000/applications/${appId}`, { method: "DELETE" });
+        setApplications(prev => prev.filter(app => app.id !== appId));
+        return;
+    }
+
     setApplications(prev =>
-        prev.map(app =>
-            app.id === appId ? { ...app, ...updates } : app
-        )
+        prev.map(app => app.id === appId ? { ...app, ...updates } : app)
     );
 };
 
 const handleDeleteApplication = async (appId) => {
     if (window.confirm('Are you sure you want to delete this application?')) {
-        await fetch(`http://localhost:5000/applications/${appId}`, {
+        const response = await fetch(`http://localhost:5000/applications/${appId}`, {
             method: "DELETE"
         });
+        if (response.status === 429) {
+            alert("Too many deletions. Please try again later.");
+            return;
+        }
         setApplications(prev => prev.filter(app => app.id !== appId));
     }
 };
 
 const handleClearAll = async () => {
     if (window.confirm('Are you sure you want to delete all applications? This cannot be undone.')) {
-        // Delete each application from backend
         for (const app of applications) {
-            await fetch(`http://localhost:5000/applications/${app.id}`, {
+            const response = await fetch(`http://localhost:5000/applications/${app.id}`, {
                 method: "DELETE"
             });
+            if (response.status === 429) {
+                alert("Too many requests. Please try again later.");
+                return;
+            }
         }
         setApplications([]);
     }
@@ -103,7 +132,7 @@ const handleClearAll = async () => {
       return;
     }
 
-    const headers = ['Company', 'Position', 'Location', 'Status', 'Application Date', 'Salary', 'Notes', 'Link'];
+    const headers = ['Company', 'Position', 'Location', 'Status', 'Application Date', 'Deadline', 'Salary', 'Notes', 'Link'];
     const csvContent = [
       headers.join(','),
       ...applications.map(app => [
@@ -112,8 +141,9 @@ const handleClearAll = async () => {
         app.location,
         app.status,
         app.applicationDate,
+        app.deadline,
         app.salary,
-        `"${app.notes.replace(/"/g, '""')}"`, // Escape quotes in notes
+        `"${(app.notes || '').replace(/"/g, '""')}"`,
         app.link
       ].join(','))
     ].join('\n');
@@ -182,6 +212,26 @@ const handleClearAll = async () => {
         >
           Interview Prep
         </button>
+        <button                                                        
+        className={`tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
+        onClick={() => setActiveTab('analytics')}
+        >
+          Analytics
+        </button>
+        <button                                                    
+        className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+        onClick={() => setActiveTab('settings')}
+        >
+          Settings
+        </button>
+        {isAdmin && (
+        <button
+          className={`tab-btn ${activeTab === 'control' ? 'active' : ''}`}
+          onClick={() => setActiveTab('control')}
+        >
+          Control
+       </button>
+)}
       </div>
 
       <div className="tab-content">
@@ -202,6 +252,11 @@ const handleClearAll = async () => {
         )}
         {activeTab === 'resume' && <ResumeUpload />}
         {activeTab === 'interview' && <InterviewPrep />}
+        {activeTab === 'analytics' && <Analytics applications={applications} />}   
+        {activeTab === 'settings' && (                                              
+        <Settings onSettingsChange={(newSettings) => setSettings(prev => ({ ...prev, ...newSettings }))} />
+    )}
+        {activeTab === 'control' && isAdmin && <Control />}
       </div>
     </div>
   );

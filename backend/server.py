@@ -8,10 +8,21 @@ from groq import Groq
 import PyPDF2
 import base64
 import io
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import datetime
+
+
+
 load_dotenv()
 print("GROQ KEY:", os.getenv("GROQ_API_KEY"))
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
+
+limiter = Limiter(app=app,
+    key_func=get_remote_address,
+    default_limits=[]
+)
 
 
 # PostgreSQL configuration
@@ -25,15 +36,18 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# User model
+
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)  
+    is_admin = db.Column(db.Boolean, default=False)
 
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     company = db.Column(db.String(200), nullable=False)
     position = db.Column(db.String(200), nullable=False)
     location = db.Column(db.String(200))
@@ -44,12 +58,18 @@ class Application(db.Model):
     notes = db.Column(db.Text)
     link = db.Column(db.String(500))
     description = db.Column(db.Text)
+class LoginLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    login_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 # Initialize DB
 with app.app_context():
     db.create_all()
-# Signup
+
 # Signup
 @app.route("/signup", methods=["POST"])
+@limiter.limit("5 per hour")  # Limit to 5 signup attempts per hour per IP
 def signup():
     try:
         data = request.get_json()
@@ -69,6 +89,7 @@ def signup():
 
 # Login
 @app.route("/login", methods=["POST"])
+@limiter.limit("10 per minute")  # Limit to 10 login attempts per minute per IP
 def login():
     try:
         data = request.get_json()
@@ -77,12 +98,16 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            return jsonify({"success": True})
+            log = LoginLog(user_id=user.id, email=user.email)
+            db.session.add(log)
+            db.session.commit()
+            return jsonify({"success": True, "is_admin": user.is_admin})
         else:
             return jsonify({"success": False, "message": "Invalid credentials"})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 @app.route("/applications", methods=["POST"])
+@limiter.limit("30 per minute")  # Limit to 30 application creations per minute per IP
 def add_application():
     try:
         data = request.get_json()
@@ -110,6 +135,7 @@ def add_application():
         return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route("/applications/<email>", methods=["GET"])
+@limiter.limit("30 per minute")  # Limit to 30 application retrievals per minute per IP
 def get_applications(email):
     try:
         user = User.query.filter_by(email=email).first()
@@ -136,6 +162,7 @@ def get_applications(email):
         return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route("/applications/<int:app_id>", methods=["DELETE"])
+@limiter.limit("30 per minute")  # Limit to 30 application deletions per minute per IP
 def delete_application(app_id):
     try:
         application = Application.query.get(app_id)
@@ -148,6 +175,7 @@ def delete_application(app_id):
         return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route("/applications/<int:app_id>", methods=["PUT"])
+@limiter.limit("15 per minute")  # Limit to 15 application updates per minute per IP
 def update_application(app_id):
     try:
         data = request.get_json()
@@ -171,6 +199,7 @@ def update_application(app_id):
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 @app.route("/applications/<email>/with-description", methods=["GET"])
+@limiter.limit("100 per minute")  # Limit to 100 application retrievals with description per minute per IP
 def get_applications_with_description(email):
     try:
         user = User.query.filter_by(email=email).first()
@@ -197,28 +226,28 @@ def get_applications_with_description(email):
 # Get AI feedback
 
 @app.route("/ai-feedback", methods=["POST"])
+@limiter.limit("5 per hour")  # Limit to 5 AI feedback requests per hour per IP
 def ai_feedback():
     try:
         data = request.get_json()
         resume_base64 = data.get("resume")
         job_description = data.get("description")
 
-        # Strip data URL prefix
+        
         if "," in resume_base64:
             resume_base64 = resume_base64.split(",")[1]
 
-        # Decode base64 to bytes
+        
         resume_bytes = base64.b64decode(resume_base64)
 
-        # Extract text from PDF
+        #read text from the PDF
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(resume_bytes))
         resume_text = ""
         for page in pdf_reader.pages:
             resume_text += page.extract_text()
 
-        print("Resume text extracted:", resume_text[:100])
-        print("Calling Groq...")
-
+        
+        #connect to Groq AI
         client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
@@ -237,13 +266,14 @@ def ai_feedback():
         print("ERROR:", str(e))
         return jsonify({"success": False, "message": str(e)}), 500
 @app.route("/interview-feedback", methods=["POST"])
+@limiter.limit("5 per hour")  # Limit to 5 interview feedback requests per hour per IP
 def interview_feedback():
     try:
         data = request.get_json()
         job_description = data.get("description")
         position = data.get("position")
         company = data.get("company")
-
+        #connect to Groq AI
         client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
@@ -294,6 +324,36 @@ def get_interview_applications(email):
         })
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
+@app.route("/admin/users", methods=["GET"])
+def get_users():
+    users = User.query.all()
+    return jsonify({"success": True, "users": [
+        {"id": u.id, "email": u.email, "is_admin": u.is_admin} for u in users
+    ]})
+
+@app.route("/admin/delete/<int:user_id>", methods=["POST"])
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if not user:                                          
+        return jsonify({"success": False, "message": "User not found"}), 404
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"success": True})
+@app.route("/admin/logs", methods=["GET"])
+def get_logs():
+    logs = LoginLog.query.order_by(LoginLog.login_time.desc()).all()
+    return jsonify({"success": True, "logs": [
+        {"email": l.email, "login_time": l.login_time.strftime("%Y-%m-%d %H:%M:%S")} for l in logs
+    ]})
+
+@app.route("/admin/make-admin/<int:user_id>", methods=["POST"])
+def make_admin(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"success": False, "message": "User not found"}), 404
+    user.is_admin = not user.is_admin 
+    db.session.commit()
+    return jsonify({"success": True, "is_admin": user.is_admin})
 if __name__ == "__main__":
     print("Starting Flask...")
     app.run(host="127.0.0.1", port=5000, debug=True)

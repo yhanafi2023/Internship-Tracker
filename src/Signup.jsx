@@ -15,11 +15,17 @@ function Signup() {
         },
         body: JSON.stringify({ email, password })
       });
-
+      if (response.status === 429) {
+        alert("Too many signup attempts. Please try again later.");
+        return;
+      }
       const data = await response.json();
 
       if (data.success) {
-        alert("Account created!");
+    alert("Account created!");
+    window.location.href = "/login";  
+
+        
       } else {
         alert("Error creating account");
       }

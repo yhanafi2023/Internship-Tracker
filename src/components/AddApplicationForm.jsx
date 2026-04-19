@@ -42,7 +42,7 @@ const AddApplicationForm = ({ onAddApplication }) => {
 
     onAddApplication(newApplication);
     
-    // Reset form
+    // Empty out the form data after submission
     setFormData({
       company: '',
       position: '',

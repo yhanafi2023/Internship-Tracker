@@ -28,7 +28,7 @@ const App = () => {
           <Link to="/"><button>Home</button></Link>
           <Link to="/about"><button>About Us</button></Link>
           <Link to="/contact"><button>Contact Us</button></Link>
-          <Link to="/tracker"><button>Job Tracker</button></Link>
+          {isLoggedIn && <Link to="/tracker"><button>Job Tracker</button></Link>}
         </div>
         <div className="nav-right">
           {isLoggedIn 

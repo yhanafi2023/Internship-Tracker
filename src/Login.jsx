@@ -4,35 +4,37 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (e) => {
+
+const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+        const response = await fetch("http://localhost:5000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
 
-      const data = await response.json();
+        if (response.status === 429) {
+            alert("Too many login attempts. Please try again later.");
+            return;
+        }
 
-      if (data.success) {
-        alert("Login successful!");
-      } else {
-        alert("Invalid credentials");
-      }
-      if (data.success) {
-          localStorage.setItem("user", JSON.stringify({ email })); 
-          window.location.href = "/tracker";                        
-          alert("Login successful!");
-}
+        const data = await response.json();
 
-    } catch (error) {
-      alert("Server not connected yet");
+        if (data.success) {
+            localStorage.setItem("user", JSON.stringify({ email, is_admin: data.is_admin }));
+            window.location.href = "/tracker";
+        } else {
+            alert("Invalid credentials");
+        }
+    } catch (err) {
+        alert("Something went wrong. Please try again.");
     }
-  };
+};
+
 
   return (
     <div>
@@ -60,7 +62,7 @@ function Login() {
       </form>
     </div>
   );
-}
+};
 
 export default Login;
 

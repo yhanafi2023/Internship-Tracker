@@ -28,3 +28,4 @@ def test_add_application():
     response = requests.post(f"{BASE_URL}/applications", json=payload)
     assert response.status_code == 200
     assert response.json().get("success") is True
+

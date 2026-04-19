@@ -95,7 +95,7 @@ const ImportApplications = ({ onImport }) => {
       <div className="csv-format-info">
         <h3>Expected CSV Format:</h3>
         <p>Your CSV should contain columns like:</p>
-        <code>company, position, location, date, salary, description, link</code>
+        <code>company, position, location, application date, deadline,salary, description, link</code>
         <p>Column names can vary - the system will automatically match common variations.</p>
       </div>
     </div>
