@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import URL from './config.js';
+import URL from '../config.js';
 
 const Control = () => {
     const [users, setUsers] = useState([]);
@@ -10,11 +10,11 @@ const Control = () => {
     const adminEmail = JSON.parse(localStorage.getItem("user"))?.email;
 
     useEffect(() => {
-        fetch("${URL}/admin/users")
+        fetch(`${URL}/admin/users`)
             .then(res => res.json())
             .then(data => { if (data.success) setUsers(data.users); });
 
-        fetch("${URL}/admin/logs")
+        fetch(`${URL}/admin/logs`)
             .then(res => res.json())
             .then(data => { if (data.success) setLogs(data.logs); });
     }, []);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { parseJobApplicationsCSV } from '../utils/jobApplications.js';
-import URL from './config.js';
+import URL from '../config.js';
 
 const ImportApplications = ({ onImport }) => {
   const [isDragging, setIsDragging] = useState(false);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import URL from './config.js';
+import URL from '../config.js';
 
 const ResumeUpload = () => {
   const [resume, setResume] = useState(null);
@@ -55,7 +55,7 @@ const ResumeUpload = () => {
     setFeedback('');
 
     try {
-      const response = await fetch("${URL}/ai-feedback", {
+      const response = await fetch(`${URL}/ai-feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resume, description: selectedApp.description })

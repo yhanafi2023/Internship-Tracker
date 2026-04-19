@@ -10,7 +10,7 @@ const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-        const response = await fetch("${URL}/login", {
+        const response = await fetch(`${URL}/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

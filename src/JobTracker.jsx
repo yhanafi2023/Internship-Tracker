@@ -35,7 +35,7 @@ useEffect(() => {
 
 // Save application to backend
 const handleAddApplication = async (newApplication) => {
-    const response = await fetch("${URL}/applications", {
+    const response = await fetch(`${URL}/applications`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...newApplication, email })
@@ -60,7 +60,7 @@ const handleAddApplication = async (newApplication) => {
     );
     const savedApps = [];
     for (const app of uniqueNewApps) {
-        const response = await fetch("${URL}/applications", {
+        const response = await fetch(`${URL}/applications`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...app, email })

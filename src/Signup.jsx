@@ -9,7 +9,7 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const response = await fetch("${URL}/signup", {
+      const response = await fetch(`${URL}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

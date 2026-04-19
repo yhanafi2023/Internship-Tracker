@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { APPLICATION_STATUSES, STATUS_COLORS, getNextStatus, getPreviousStatus } from '../utils/jobApplications.js';
-import URL from './config.js';
+import URL from '../config.js';
 
 
 

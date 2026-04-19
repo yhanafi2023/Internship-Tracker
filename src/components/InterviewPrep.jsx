@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import URL from './config.js';
+import URL from '../config.js';
 
 const InterviewPrep = () => {
   const [applications, setApplications] = useState([]);
@@ -28,7 +28,7 @@ const InterviewPrep = () => {
     setLoading(true);
     setQuestions('');
     try {
-      const response = await fetch("${URL}/interview-feedback", {
+      const response = await fetch(`${URL}/interview-feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

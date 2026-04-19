@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import URL from './config.js';
+import URL from '../config.js';
 
 const Settings = ({ onSettingsChange }) => {
     const [autoRemoveRejected, setAutoRemoveRejected] = useState(() => {
