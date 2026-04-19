@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import URL from './config.js';
 
 const Control = () => {
     const [users, setUsers] = useState([]);
@@ -9,18 +10,18 @@ const Control = () => {
     const adminEmail = JSON.parse(localStorage.getItem("user"))?.email;
 
     useEffect(() => {
-        fetch("http://localhost:5000/admin/users")
+        fetch("${URL}/admin/users")
             .then(res => res.json())
             .then(data => { if (data.success) setUsers(data.users); });
 
-        fetch("http://localhost:5000/admin/logs")
+        fetch("${URL}/admin/logs")
             .then(res => res.json())
             .then(data => { if (data.success) setLogs(data.logs); });
     }, []);
 
     const handleDelete = async (userId) => {
         if (!window.confirm("Are you sure you want to delete this user? This cannot be undone.")) return;
-        const response = await fetch(`http://localhost:5000/admin/delete/${userId}`, {
+        const response = await fetch(`${URL}/admin/delete/${userId}`, {
             method: "POST"
         });
         const data = await response.json();
@@ -31,7 +32,7 @@ const Control = () => {
 
     const handleMakeAdmin = async (userId) => {
         if (!window.confirm("Toggle admin status for this user?")) return;
-        const response = await fetch(`http://localhost:5000/admin/make-admin/${userId}`, {
+        const response = await fetch(`${URL}/admin/make-admin/${userId}`, {
             method: "POST"
         });
         const data = await response.json();

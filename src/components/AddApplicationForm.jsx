@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { APPLICATION_STATUSES } from '../utils/jobApplications.js';
+import URL from './config.js';
 
 
 const AddApplicationForm = ({ onAddApplication }) => {

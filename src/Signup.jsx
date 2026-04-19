@@ -1,4 +1,5 @@
 import { useState } from "react";
+import URL from './config.js';
 
 function Signup() {
   const [email, setEmail] = useState("");

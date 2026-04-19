@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import URL from './config.js';
 
 const ResumeUpload = () => {
   const [resume, setResume] = useState(null);
