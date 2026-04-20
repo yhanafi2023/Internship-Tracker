@@ -369,6 +369,16 @@ def make_admin(user_id):
     user.is_admin = not user.is_admin 
     db.session.commit()
     return jsonify({"success": True, "is_admin": user.is_admin})
+@app.route("/admin/active-users", methods=["GET"])
+def get_active_users():
+    
+    five_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+    active_users = User.query.filter(User.last_seen >= five_minutes_ago).all()
+    return jsonify({
+        "success": True,
+        "count": len(active_users),
+        "users": [{"email": u.email, "last_seen": u.last_seen.strftime("%Y-%m-%d %H:%M:%S")} for u in active_users]
+    })
 if __name__ == "__main__":
     print("Starting Flask...")
     app.run(host="127.0.0.1", port=5000, debug=True)

@@ -9,15 +9,21 @@ const Control = () => {
 
     const adminEmail = JSON.parse(localStorage.getItem("user"))?.email;
 
-    useEffect(() => {
-        fetch(`${URL}/admin/users`)
-            .then(res => res.json())
-            .then(data => { if (data.success) setUsers(data.users); });
+    const [activeUsers, setActiveUsers] = useState({ count: 0, users: [] });
 
-        fetch(`${URL}/admin/logs`)
-            .then(res => res.json())
-            .then(data => { if (data.success) setLogs(data.logs); });
-    }, []);
+useEffect(() => {
+    fetch(`${URL}/admin/users`)
+        .then(res => res.json())
+        .then(data => { if (data.success) setUsers(data.users); });
+
+    fetch(`${URL}/admin/logs`)
+        .then(res => res.json())
+        .then(data => { if (data.success) setLogs(data.logs); });
+
+    fetch(`${URL}/admin/active-users`)
+        .then(res => res.json())
+        .then(data => { if (data.success) setActiveUsers(data); });
+}, []);
 
     const handleDelete = async (userId) => {
         if (!window.confirm("Are you sure you want to delete this user? This cannot be undone.")) return;
@@ -52,17 +58,40 @@ const Control = () => {
     );
 
     return (
-        <div>
-            <h2>User Control Panel</h2>
+    <div>
+        <h2>User Control Panel</h2>
 
-            <div style={{ marginBottom: "1rem" }}>
-                <button onClick={() => setView("users")} style={{ marginRight: "0.5rem" }}>
-                    Users
-                </button>
-                <button onClick={() => setView("logs")}>
-                    Login Logs
-                </button>
-            </div>
+        <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            marginBottom: '24px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+        }}>
+            <span style={{
+                background: '#28a745',
+                borderRadius: '50%',
+                width: '12px',
+                height: '12px',
+                display: 'inline-block'
+            }} />
+            <span style={{ fontWeight: '600' }}>
+                Total Users: {users.length}
+            </span>
+        </div>
+
+        <div style={{ marginBottom: "1rem" }}>
+            <button onClick={() => setView("users")} style={{ marginRight: "0.5rem" }}>
+                Users
+            </button>
+            <button onClick={() => setView("logs")}>
+                Login Logs
+            </button>
+        </div>
+        ...rest of your code
 
             <input
                 type="text"
