@@ -266,8 +266,8 @@ def ai_feedback():
         print("Groq response received")
         return jsonify({"success": True, "feedback": feedback})
     except Exception as e:
-        print("ERROR:", str(e))
-        return jsonify({"success": False, "message": str(e)}), 500
+        print("ERROR: Please Input a valid resume or valid job description.", str(e))
+        return jsonify({"success": False, "message": "ERROR: Please Input a valid resume or valid job description."}), 500
 @app.route("/interview-feedback", methods=["POST"])
 @limiter.limit("5 per hour")  # Limit to 5 interview feedback requests per hour per IP
 def interview_feedback():
