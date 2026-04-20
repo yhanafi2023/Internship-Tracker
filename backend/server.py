@@ -45,8 +45,9 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)  
+    password = db.Column(db.String(120), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    last_seen = db.Column(db.DateTime, nullable=True)  
 
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,11 +81,13 @@ def signup():
         password = data.get("password")
 
         if User.query.filter_by(email=email).first():
+            
             return jsonify({"success": False, "message": "Email already exists"})
 
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         new_user = User(email=email, password=hashed.decode('utf-8'))
         db.session.add(new_user)
+        new_user.last_seen = datetime.datetime.utcnow()
         db.session.commit()
         return jsonify({"success": True})
     except Exception as e:
@@ -100,7 +103,9 @@ def login():
         password = data.get("password")
 
         user = User.query.filter_by(email=email).first()
+
         if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+            user.last_seen = datetime.datetime.utcnow()
             log = LoginLog(user_id=user.id, email=user.email)
             db.session.add(log)
             db.session.commit()
@@ -118,6 +123,7 @@ def add_application():
         user = User.query.filter_by(email=email).first()
         if not user:
             return jsonify({"success": False, "message": "User not found"}), 404
+        user.last_seen = datetime.datetime.utcnow()
         new_application = Application(
             user_id=user.id,
             company=data.get("company"),
@@ -144,6 +150,7 @@ def get_applications(email):
         user = User.query.filter_by(email=email).first()
         if not user:
             return jsonify({"success": False, "message": "User not found"}), 404
+        user.last_seen = datetime.datetime.utcnow()
         apps = Application.query.filter_by(user_id=user.id).all()
         return jsonify({
             "success": True,
@@ -171,6 +178,7 @@ def delete_application(app_id):
         application = Application.query.get(app_id)
         if not application:
             return jsonify({"success": False, "message": "Application not found"}), 404
+        
         db.session.delete(application)
         db.session.commit()
         return jsonify({"success": True})
@@ -208,7 +216,7 @@ def get_applications_with_description(email):
         user = User.query.filter_by(email=email).first()
         if not user:
             return jsonify({"success": False, "message": "User not found"}), 404
-        
+        user.last_seen = datetime.datetime.utcnow()
         apps = Application.query.filter_by(user_id=user.id).filter(
             Application.description != None, 
             Application.description != ''
