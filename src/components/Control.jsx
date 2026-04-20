@@ -115,7 +115,7 @@ const Control = () => {
                         {filteredLogs.map((log, index) => (
                             <tr key={index}>
                                 <td>{log.email}</td>
-                                <td>{log.login_time}</td>
+                                <td>{new Date(log.login_time + 'Z').toLocaleString()}</td>
                             </tr>
                         ))}
                         {filteredLogs.length === 0 && (

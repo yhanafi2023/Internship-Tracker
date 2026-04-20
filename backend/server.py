@@ -65,8 +65,7 @@ class LoginLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-    login_time = db.Column(db.DateTime, default=lambda: datetime.datetime.now(pytz.timezone('US/Eastern')))
-
+    login_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 # Initialize DB
 with app.app_context():
     db.create_all()
