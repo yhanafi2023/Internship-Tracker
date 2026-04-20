@@ -339,8 +339,12 @@ def delete_user(user_id):
     user = User.query.get(user_id)
     if not user:                                          
         return jsonify({"success": False, "message": "User not found"}), 404
-    db.session.delete(user)
-    db.session.commit()
+        Application.query.filter_by(user_id=user_id).delete()
+        LoginLog.query.filter_by(user_id=user_id).delete()
+        
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"success": True})
     return jsonify({"success": True})
 @app.route("/admin/logs", methods=["GET"])
 def get_logs():
