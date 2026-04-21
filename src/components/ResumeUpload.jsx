@@ -94,6 +94,7 @@ const ResumeUpload = () => {
     }
   };
 
+
   const formatFeedback = (text) => {
     const lines = text.split('\n').filter(line => line.trim() !== '');
     return lines.map((line, index) => {

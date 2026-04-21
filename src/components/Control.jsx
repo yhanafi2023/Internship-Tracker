@@ -56,6 +56,7 @@ useEffect(() => {
     const filteredLogs = logs.filter(l =>
         l.email.toLowerCase().includes(search.toLowerCase())
     );
+    
 
     return (
     <div>
@@ -79,7 +80,7 @@ useEffect(() => {
                 display: 'inline-block'
             }} />
             <span style={{ fontWeight: '600' }}>
-                Total Users: {users.length}
+    Total Users: {users.length} | Active Users: {activeUsers.count}
             </span>
         </div>
 
