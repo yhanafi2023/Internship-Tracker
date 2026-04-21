@@ -12,9 +12,18 @@ const ResumeUpload = () => {
   const email = user?.email;
 
   useEffect(() => {
-    const savedResume = localStorage.getItem('resume');
-    if (savedResume) setResume(savedResume);
-  }, []);
+  const savedResume = localStorage.getItem('resume');
+
+  if (savedResume) {
+    
+    if (savedResume.startsWith("data:application/pdf")) {
+      setResume(savedResume);
+    } else {
+      
+      localStorage.removeItem('resume');
+    }
+  }
+}, []);
 
   useEffect(() => {
     if (resume) localStorage.setItem('resume', resume);
