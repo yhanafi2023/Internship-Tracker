@@ -379,6 +379,7 @@ def get_active_users():
         "count": len(active_users),
         "users": [{"email": u.email, "last_seen": u.last_seen.strftime("%Y-%m-%d %H:%M:%S")} for u in active_users]
     })
+
 if __name__ == "__main__":
     print("Starting Flask...")
     app.run(host="127.0.0.1", port=5000, debug=True)

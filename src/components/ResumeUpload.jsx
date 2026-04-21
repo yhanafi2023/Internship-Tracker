@@ -148,7 +148,7 @@ const ResumeUpload = () => {
         boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
         marginBottom: '24px'
       }}>
-        <h3 style={{ marginBottom: '16px' }}>Upload Resume</h3>
+        <h3 style={{ marginBottom: '16px' }}>Upload Resume (PDF ONLY)</h3>
         <input
   key={fileInputKey}
   type="file"
