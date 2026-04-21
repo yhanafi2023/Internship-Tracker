@@ -34,12 +34,19 @@ const ResumeUpload = () => {
   }, []);
 
   const handleUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setResume(reader.result);
-    reader.readAsDataURL(file);
-  };
+  const file = e.target.files[0];
+  if (!file) return;
+
+  
+  if (file.type !== "application/pdf") {
+    alert("Only PDF files are allowed.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = () => setResume(reader.result);
+  reader.readAsDataURL(file);
+};
 
   const handleRemove = () => {
     setResume(null);
@@ -128,7 +135,7 @@ const ResumeUpload = () => {
         marginBottom: '24px'
       }}>
         <h3 style={{ marginBottom: '16px' }}>Upload Resume</h3>
-        <input type="file" accept=".pdf,.doc,.docx" onChange={handleUpload} />
+        <input type="file" accept=".pdf" onChange={handleUpload} />
         {resume && (
           <div style={{ marginTop: '16px', display: 'flex', gap: '10px', alignItems: 'center' }}>
             <span style={{ color: '#28a745', fontWeight: '600' }}>✅ Resume uploaded</span>
