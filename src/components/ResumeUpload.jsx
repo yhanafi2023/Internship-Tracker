@@ -7,6 +7,7 @@ const ResumeUpload = () => {
   const [selectedApp, setSelectedApp] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [loadingFeedback, setLoadingFeedback] = useState(false);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const email = user?.email;
@@ -49,8 +50,10 @@ const ResumeUpload = () => {
   
   if (file.type !== "application/pdf") {
     alert("Only PDF files are allowed.");
+    setFileInputKey(prev => prev + 1);
     return;
   }
+  
 
   const reader = new FileReader();
   reader.onloadend = () => setResume(reader.result);
@@ -61,6 +64,7 @@ const ResumeUpload = () => {
     setResume(null);
     setFeedback('');
     localStorage.removeItem('resume');
+    setFileInputKey(prev => prev + 1);
   };
 
   const handleGetFeedback = async () => {
@@ -144,7 +148,12 @@ const ResumeUpload = () => {
         marginBottom: '24px'
       }}>
         <h3 style={{ marginBottom: '16px' }}>Upload Resume</h3>
-        <input type="file" accept=".pdf" onChange={handleUpload} />
+        <input
+  key={fileInputKey}
+  type="file"
+  accept=".pdf"
+  onChange={handleUpload}
+/>
         {resume && (
           <div style={{ marginTop: '16px', display: 'flex', gap: '10px', alignItems: 'center' }}>
             <span style={{ color: '#28a745', fontWeight: '600' }}>✅ Resume uploaded</span>
