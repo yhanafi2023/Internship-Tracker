@@ -144,34 +144,34 @@ const JobDashboard = ({ applications, onUpdateApplication, onDeleteApplication }
             </div>
 
             <div className="form-row">
-  <div className="form-group">
-    <label>Application Date</label>
-    <input
-      type="date"
-      value={editForm.applicationDate}
-      onChange={e => setEditForm({...editForm, applicationDate: e.target.value})}
-    />
-  </div>
+              <div className="form-group">
+                <label>Application Date</label>
+                  <input
+                    type="date"
+                    value={editForm.applicationDate}
+                    onChange={e => setEditForm({...editForm, applicationDate: e.target.value})}
+                  />
+            </div>
 
-  <div className="form-group">
-    <label>Deadline</label>
-    <input
-      type="date"
-      value={editForm.deadline || ''}
-      onChange={e => setEditForm({...editForm, deadline: e.target.value})}
-    />
-  </div>
-</div>
+              <div className="form-group">
+                <label>Deadline</label>
+                  <input
+                    type="date"
+                    value={editForm.deadline || ''}
+                    onChange={e => setEditForm({...editForm, deadline: e.target.value})}
+                  />
+              </div>
+            </div>
 
-<div className="form-row">
-  <div className="form-group">
-    <label>Salary</label>
-    <input
-      value={editForm.salary}
-      onChange={e => setEditForm({...editForm, salary: e.target.value})}
-    />
-  </div>
-</div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Salary</label>
+                  <input
+                    value={editForm.salary}
+                    onChange={e => setEditForm({...editForm, salary: e.target.value})}
+                  />
+              </div>
+            </div>
 
             <div className="form-group">
               <label>Link</label>
@@ -184,15 +184,15 @@ const JobDashboard = ({ applications, onUpdateApplication, onDeleteApplication }
             </div>
 
             <div className="form-group">
-  <label>Notes</label>
-  <textarea rows="4" value={editForm.notes} 
-    onChange={e => setEditForm({...editForm, notes: e.target.value})}
-    maxLength={1000}
-  />
-  <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'right' }}>
-    {(editForm.notes || '').length}/1000
-  </p>
-</div>
+              <label>Notes</label>
+                <textarea rows="4" value={editForm.notes} 
+                  onChange={e => setEditForm({...editForm, notes: e.target.value})}
+                  maxLength={1000}
+                />
+              <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'right' }}>
+                  {(editForm.notes || '').length}/1000
+              </p>
+        </div>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'center' }}>
               <button className="submit-btn" onClick={handleEditSave}>Save Changes</button>
@@ -256,7 +256,7 @@ const JobDashboard = ({ applications, onUpdateApplication, onDeleteApplication }
             <div className="card-content">
               <div className="company-info">
                 <strong>Company: {application.company}</strong>
-                {application.location && <span> • Location: {application.location}</span>}
+                {application.location && <span> | Location: {application.location}</span>}
               </div>
               <div className="application-meta">
   <span className="date">
@@ -265,7 +265,7 @@ const JobDashboard = ({ applications, onUpdateApplication, onDeleteApplication }
 
   {application.salary && (
     <span className="salary">
-      {' '}• Salary: ${application.salary} / year
+      {' '} | Salary: ${application.salary} / year
     </span>
   )}
 
@@ -275,26 +275,26 @@ const JobDashboard = ({ applications, onUpdateApplication, onDeleteApplication }
     </div>
   )}
 </div>
-              {application.link && (
-                <a href={application.link} target="_blank" rel="noopener noreferrer" className="job-link">
-                  View Job Posting
-                </a>
-              )}
-              <div className="notes-section">
-                {editingId === application.id ? (
-                  <div className="notes-edit">
-  <textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)}
-    placeholder="Add notes about this application..." className="notes-textarea"
-    maxLength={1000}
-  />
-  <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'right' }}>
-    {editNotes.length}/1000
-  </p>
-  <div className="notes-actions">
-    <button onClick={() => handleNotesSave(application.id)} className="save-notes-btn">Save</button>
-    <button onClick={() => setEditingId(null)} className="cancel-notes-btn">Cancel</button>
-  </div>
-</div>
+        {application.link && (
+          <a href={application.link} target="_blank" rel="noopener noreferrer" className="job-link">
+             View Job Posting
+          </a>
+        )}
+      <div className="notes-section">
+          {editingId === application.id ? (
+          <div className="notes-edit">
+            <textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)}
+              placeholder="Add notes about this application..." className="notes-textarea"
+              maxLength={1000}
+            />
+              <p style={{ fontSize: '0.75rem', color: '#999', textAlign: 'right' }}>
+                {editNotes.length}/1000
+              </p>
+        <div className="notes-actions">
+          <button onClick={() => handleNotesSave(application.id)} className="save-notes-btn">Save</button>
+          <button onClick={() => setEditingId(null)} className="cancel-notes-btn">Cancel</button>
+        </div>
+          </div>
                 ) : (
                   <div className="notes-display">
                     {application.notes ? (

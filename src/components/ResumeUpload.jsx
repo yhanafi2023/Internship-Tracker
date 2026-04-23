@@ -157,7 +157,7 @@ const ResumeUpload = () => {
 />
         {resume && (
           <div style={{ marginTop: '16px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <span style={{ color: '#28a745', fontWeight: '600' }}>✅ Resume uploaded</span>
+            <span style={{ color: '#28a745', fontWeight: '600' }}>Resume uploaded</span>
             <a href={resume} download="resume">
               <button>Download</button>
             </a>

@@ -139,7 +139,7 @@ const InterviewPrep = () => {
 
           {loading && (
             <div style={{ color: '#667eea', fontWeight: '600' }}>
-              ⏳ Generating questions...
+              Generating questions...
             </div>
           )}
 

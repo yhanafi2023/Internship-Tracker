@@ -15,7 +15,6 @@ import datetime
 
 
 load_dotenv()
-print("GROQ KEY:", os.getenv("GROQ_API_KEY"))
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": [
     "http://localhost:5173",
@@ -218,8 +217,8 @@ def get_applications_with_description(email):
             return jsonify({"success": False, "message": "User not found"}), 404
         user.last_seen = datetime.datetime.utcnow()
         apps = Application.query.filter_by(user_id=user.id).filter(
-            Application.description != None, 
-            Application.description != ''
+        Application.description != None, 
+        Application.description != ''
         ).all()
         
         return jsonify({
@@ -271,7 +270,6 @@ def ai_feedback():
         )
 
         feedback = response.choices[0].message.content
-        print("Groq response received")
         return jsonify({"success": True, "feedback": feedback})
     except Exception as e:
         print("ERROR: Please Input a valid resume or valid job description.", str(e))
@@ -302,7 +300,7 @@ KEY POINTS: [key points here]
 
 Do not use any markdown, asterisks, or special formatting. Use plain text only."""
                 }
-            ]
+        ]
         )
 
         feedback = response.choices[0].message.content

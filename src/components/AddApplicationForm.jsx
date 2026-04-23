@@ -151,36 +151,36 @@ const AddApplicationForm = ({ onAddApplication }) => {
             />
           </div>
         <div className="form-group">
-  <label htmlFor="deadline">Deadline</label>
-  <input
-    type="date"
-    id="deadline"
-    name="deadline"
-    value={formData.deadline}
-    onChange={handleChange}
-  />
-</div>
+          <label htmlFor="deadline">Deadline</label>
+          <input
+          type="date"
+          id="deadline"
+          name="deadline"
+          value={formData.deadline}
+          onChange={handleChange}
+            />
+        </div>
           
-          <div className="form-group">
-    <label htmlFor="salary">Salary (per year)</label>
-    <input
-        type="text"
-        id="salary"
-        name="salary"
-        value={formData.salary}
-        onChange={(e) => {
+        <div className="form-group">
+          <label htmlFor="salary">Salary (per year)</label>
+          <input
+          type="text"
+          id="salary"
+          name="salary"
+          value={formData.salary}
+          onChange={(e) => {
             handleChange(e);
             validateSalary(e.target.value);
-        }}
-        placeholder="e.g. 75000 or $75,000"
-    />
+          }}
+              placeholder="e.g. 75000 or $75,000"
+        />
     {salaryError && (
         <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '5px' }}>
             {salaryError}
         </p>
     )}
-</div>
         </div>
+    </div>
 
         <div className="form-group">
           <label htmlFor="link">Job Posting Link</label>
