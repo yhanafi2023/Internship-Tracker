@@ -1,84 +1,207 @@
-## Internship-Tracker Web App
-Submitted by: *Amanda Buleu, Ashly Jimenez , , *
-
-
-This web application is designed to simplify and centralize the internship application process for students. It helps users manage multiple internship applications from various job boards in one intuitive dashboard, reducing manual data entry and missed deadlines. Built with Python, JavaScript, and React, the app allows users to track application statuses, organize by date or company, add notes, and receive reminders, enhancing the overall internship search experience.
-
-
-
-
-## Required Features
-The following required functionality is completed:
-
-
-**User Requirements (For a student or job applicant):**
--[ ] User should be able to create an account and login securely
--[ ] The user should be able to add internships and jobs manually
--[ ] The user should be able to update/edit internships and jobs applications
--[ ]The user should be able to track and modify their current job statuses  [ ](Accepted, rejected, Interview stage, Offered)
--[ ] The user should be able view all applications in a dashboard
--[ ] The user should be able to filter/search specific applications by certain criteria (deadlines, company, etc.)
--[ ] The user should be able to add notes with a character limit to each application
--[ ] The user should have the option to turn on reminders via email for each application via a calender date & time input
--[ ] The user should be able to upload resumes for each application
--[ ] The user should be able to view an analytics tab that displays statistics on how many jobs are of certain status and percentage response rates from companies
--[ ] The user should be able to add a job description for each company
--[ ] The user should have the option to have an AI extract keywords from the job description, giving advice for a resume
--[ ] The user should be able to upload their resume and receive feedback from an AI
-
-**User Requirements(For admin/dev)**
--[ ] The user should be able to create an admin account from a separate page from students
--[ ] The admin should be able to view traffic to the web application and see active/total users
--[ ] The admin should be able to report bugs
-
-
-
-
--[ ] The user should be able to create an admin account from a separate page from students
--[ ] The admin should be able to view traffic to the web application and see active/total users
--[ ] The admin should be able to report bugs
-
-**Functional Requirements**
--[ ] The system should allow users to register and authenticate securely.
--[ ] The system should provide a dashboard displaying all user applications.
--[ ] The system should allow creating, viewing, editing, and deleting operations for applications.
--[ ] The system should support status updates for each application.
--[ ] The system should allow users to set reminders and notifications.
--[ ] The system should allow file uploads for resumes (pdf or doc format).
--[ ] The system should allow for filtering applications or searching by name/company.
--[ ] The system should store and retrieve user and application data from a SQL database.
--[ ] The system should generate analytics for job statistics and deadlines.
--[ ] The system should allow notes to be appended to an application
--[ ] The system should optionally extract keywords from job descriptions.
--[ ] The system should allow users to track interview schedules.
--[ ] The system should allow users to optionally receive AI feedback for a resume
-
-**NonFunctional Requirements**
--[ ] The system should be able to support a large number of users
--[ ] The system should be able to handle requests (like opening web pages) within 2-3 seconds
--[ ] The system should be scalable as the amount of our users increases
--[ ] User data such as emails and passwords should be stored securely through methods such as encryption
--[ ] The system should be able to prevent someone from spamming requests (rate limiting)
--[ ] The system’s interface should be user-friendly and understandable to anyone
--[ ] The system should be operational on desktop computers
--[ ] The system should be maintainable, meaning that updating its system should not be too difficult
-
-
-## Notes
-
-## Walkthrough
-
+# Internship Tracker
+ 
+A full-stack web application that centralizes and simplifies the job and internship application process for students and job seekers.
+ 
+---
+ 
+## Overview
+ 
+Managing multiple job applications across different platforms is tedious and disorganized. Internship Tracker solves this by giving users a single dashboard to add, track, and manage every application in one place. Users can monitor application statuses, take notes, set deadlines, upload resumes, and leverage AI-powered tools to prepare for interviews and improve their resume — all without switching between tabs or job boards.
+ 
+---
+ 
+## Features
+ 
+- **User Authentication** — Secure account creation and login with encrypted passwords
+- **Application Dashboard** — View all applications in a card-based layout with status indicators
+- **Add Applications Manually** — Submit company, position, location, salary, deadline, job description, link, and notes
+- **Import via CSV** — Bulk import applications exported from Indeed, LinkedIn, or other platforms
+- **Export to CSV** — Download all your applications as a CSV file at any time
+- **Status Tracking** — Move applications through stages: Saved, Applied, Interview, Offer, Rejected, Withdrawn
+- **Search and Filter** — Search by company, position, or location and filter by status
+- **Sort Applications** — Sort by date applied, company name, status, or deadline
+- **Notes** — Add and edit personal notes on each application with a 1000 character limit
+- **Edit Applications** — Update any field on an existing application via a modal editor
+- **Delete Applications** — Remove individual applications or clear all at once
+- **Resume Upload** — Upload and store your resume directly in the app
+- **AI Resume Feedback** — Upload your resume and select a job application to receive AI-generated feedback on how well your resume matches the job description
+- **AI Interview Prep** — Generate tailored interview questions based on the job description for any application in Interview status
+- **Analytics** — Visual charts showing application breakdown by status, top companies applied to, and applications over time
+- **Auto-Remove Rejected** — Optional setting to automatically delete applications when marked as Rejected
+- **Rate Limiting** — Built-in protection against request abuse on all endpoints
+---
+ 
+## Tech Stack
+ 
+- **Frontend:** ReactJS, HTML/CSS
+- **Backend:** Python, Flask, Flask-SQLAlchemy, 
+- **Database:** PostgreSQL
+- **AI:** Groq API (Model: LLaMA 3.3 70B)
+---
+ 
+## Running Locally
+ 
+### Prerequisites
+ 
+Make sure you have the following installed before continuing:
+ 
+- **Python 3.10 or higher** — [https://www.python.org/downloads](https://www.python.org/downloads)
+- **Node.js 18 or higher** — [https://nodejs.org](https://nodejs.org)
+- **PostgreSQL** — [https://www.postgresql.org/download](https://www.postgresql.org/download)
+- **A Groq API key** — Create a free account and generate a key at [https://console.groq.com](https://console.groq.com)
+---
+ 
+### 1. Clone the Repository
+ 
+```bash
+git clone https://github.com/your-username/your-repo-name.git
+cd Internship-Tracker
+```
+ 
+---
+ 
+### 2. Set Up the PostgreSQL Database
+ 
+Open your PostgreSQL shell or a tool like pgAdmin and create a new database:
+ 
+```sql
+CREATE DATABASE internship_tracker;
+```
+ 
+Take note of your database username, password, host, and port as you will need them in the next step.
+ 
+---
+ 
+### 3. Configure the Backend Environment
+ 
+Navigate to the backend folder and create a `.env` file:
+ 
+```bash
+cd backend
+```
+ 
+Create a file named `.env` in the `backend` folder with the following contents:
+ 
+```
+DATABASE_USER=your_postgres_username
+DATABASE_PASSWORD=your_postgres_password
+DATABASE_HOST=localhost
+DATABASE_NAME=internship_tracker
+DATABASE_PORT=5432
+GROQ_API_KEY=your_groq_api_key
+```
+ 
+Replace each value with your actual credentials.
+ 
+---
+ 
+### 4. Install Backend Dependencies
+ 
+While inside the `backend` folder, create a virtual environment and install the required packages:
+ 
+```bash
+python -m venv venv
+```
+ 
+Activate the virtual environment:
+ 
+On Mac/Linux:
+```bash
+source venv/bin/activate
+```
+ 
+On Windows:
+```bash
+venv\Scripts\activate
+```
+ 
+Install dependencies:
+ 
+```bash
+pip install -r requirements.txt
+```
+ 
+---
+ 
+### 5. Start the Backend Server
+ 
+```bash
+python server.py
+```
+ 
+The Flask server will start on `http://127.0.0.1:5000`. The database tables will be created automatically on first run.
+ 
+---
+ 
+### 6. Install Frontend Dependencies
+ 
+Open a new terminal, navigate back to the root of the project, and install Node packages:
+ 
+```bash
+cd ..
+npm install
+```
+ 
+---
+ 
+### 7. Start the Frontend
+ 
+```bash
+npm run dev
+```
+ 
+The React app will be available at `http://localhost:5173`.
+ 
+---
+ 
+### Summary
+ 
+| Service    | URL                        |
+|------------|----------------------------|
+| Frontend   | http://localhost:5173      |
+| Backend    | http://127.0.0.1:5000      |
+ 
+Both the frontend and backend must be running at the same time for the application to work.
+ 
+---
+ 
+## Project Structure
+ 
+```
+root/
+├── src/
+│   ├── components/
+│   │   ├── AddApplicationForm.jsx
+│   │   ├── Analytics.jsx
+│   │   ├── ImportApplications.jsx
+│   │   ├── InterviewPrep.jsx
+│   │   ├── JobDashboard.jsx
+│   │   ├── ResumeUpload.jsx
+│   │   └── Settings.jsx
+│   ├── utils/
+│   │   └── jobApplications.js
+│   ├── App.jsx
+│   ├── App.css
+│   ├── JobTracker.jsx
+│   ├── Home.jsx
+│   ├── AboutUs.jsx
+│   ├── ContactUs.jsx
+│   ├── Login.jsx
+│   ├── Signup.jsx
+│   ├── LoginSignup.jsx
+│   ├── config.js
+│   └── main.jsx
+├── backend/
+│   ├── server.py
+│   ├── requirements.txt
+│   └── .env
+├── index.html
+├── vite.config.js
+└── package.json
+```
+ 
+---
+ 
 ## License
-    Copyright [yyyy] [name of copyright owner]
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+ 
+Licensed under the Apache License, Version 2.0. See `LICENSE` for details
